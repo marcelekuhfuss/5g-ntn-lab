@@ -1,0 +1,6 @@
+*.log
+*.pcap
+build/
+__pycache__/
+.venv/
+.env

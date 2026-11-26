@@ -1,0 +1,4 @@
+# Open5GS subscribers, read by the Open5GS container shipped in OCUDU (ocudu/docker) at startup.
+# Format: Name,IMSI,Key,OP_Type,OP/OPc,AMF,QCI,IP_alloc
+# Test credentials only — must match [usim] in configs/ue_zmq.conf
+ue01,001010123456780,00112233445566778899aabbccddeeff,opc,63BFA50EE6523365FF14C1F45F88737D,8000,9,10.45.1.2
