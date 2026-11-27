@@ -1,0 +1,27 @@
+diff --git a/docker/open5gs/open5gs-5gc.yml b/docker/open5gs/open5gs-5gc.yml
+index 1396534cac..b075b49222 100644
+--- a/docker/open5gs/open5gs-5gc.yml
++++ b/docker/open5gs/open5gs-5gc.yml
+@@ -172,14 +172,14 @@ amf:
+         mnc: ${MNC}
+       tac: 7
+     # TACs 8 and 9 are served only for the multi-TAC NTN example; every other example registers with TAC 7.
+-    - plmn_id:
+-        mcc: ${MCC}
+-        mnc: ${MNC}
+-      tac: 8
+-    - plmn_id:
+-        mcc: ${MCC}
+-        mnc: ${MNC}
+-      tac: 9
++   # - plmn_id:
++   #     mcc: ${MCC}
++   #     mnc: ${MNC}
++   #   tac: 8
++  #  - plmn_id:
++   #     mcc: ${MCC}
++   #     mnc: ${MNC}
++   #   tac: 9
+   plmn_support:
+     - plmn_id:
+         mcc: ${MCC}

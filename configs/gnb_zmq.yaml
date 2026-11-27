@@ -1,63 +1,62 @@
-# OCUDU gNB — ZMQ virtual radio, band n3, 10 MHz, 15 kHz SCS.
-# Adapted from the official OCUDU "Building a 5G network with srsUE" tutorial
-# (https://docs.ocudu.org/tutorials/srsue/), BSD-3-Clause-Open-MPI.
-#
-# 10 MHz (52 PRB, 11.52 Msps) is the tutorial's ZMQ setting: it is the combination
-# known to work with srsUE and keeps CPU load low. Must match configs/ue_zmq.conf.
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# This configuration file example shows how to configure the OCUDU gNB to allow srsUE to connect to it.
+# This specific example uses ZMQ in place of a USRP for the RF-frontend, and creates an FDD cell with 10 MHz bandwidth.
+# To run the OCUDU gNB with this config, use the following command:
+#   sudo ./gnb -c gnb_zmq.yaml
 
 cu_cp:
   amf:
-    addr: 10.53.1.2            # Open5GS AMF in Docker
+    addr: 10.53.1.2                 # The address or hostname of the AMF.
     port: 38412
-    bind_addr: 10.53.1.1       # host side of the Docker bridge
+    bind_addr: 10.53.1.1            # A local IP that the gNB binds to for traffic from the AMF.
     supported_tracking_areas:
       - tac: 7
         plmn_list:
           - plmn: "00101"
             tai_slice_support_list:
               - sst: 1
-  inactivity_timer: 7200       # seconds; keeps the idle UE attached during experiments
+  inactivity_timer: 7200            # Sets the UE/PDU Session/DRB inactivity timer to 7200 seconds. Supported: [1 - 7200].
 
 ru_sdr:
-  device_driver: zmq
-  # gNB transmits on 2000 (DL), receives on 2001 (UL).
-  # In stage 2 these will point at the GNU Radio broker instead of the UE.
-  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=11.52e6
-  srate: 11.52
-  tx_gain: 0
-  rx_gain: 0
+  device_driver: zmq                # The RF driver name.
+  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=11.52e6 # Optionally pass arguments to the selected RF driver.
+  srate: 11.52                      # RF sample rate might need to be adjusted according to selected bandwidth.
+  tx_gain: 0                        # Transmit gain of the RF might need to adjusted to the given situation.
+  rx_gain: 0                        # Receive gain of the RF might need to adjusted to the given situation.
 
 cell_cfg:
-  dl_arfcn: 368500             # 1842.5 MHz, band n3
-  band: 3
-  channel_bandwidth_MHz: 10
-  common_scs: 15
-  plmn: "00101"
-  tac: 7
+  dl_arfcn: 368500                  # ARFCN of the downlink carrier (center frequency).
+  band: 3                           # The NR band.
+  channel_bandwidth_MHz: 10         # Bandwith in MHz. Number of PRBs will be automatically derived.
+  common_scs: 15                    # Subcarrier spacing in kHz used for data.
+  plmn: "00101"                     # PLMN broadcasted by the gNB.
+  tac: 7                            # Tracking area code (needs to match the core configuration).
   pdcch:
     common:
-      ss0_index: 0             # srsUE-compatible search space zero
-      coreset0_index: 6        # srsUE-compatible CORESET#0 for 10 MHz
+      ss0_index: 0                  # Set search space zero index to match srsUE capabilities
+      coreset0_index: 6             # Set search CORESET Zero index to match srsUE capabilities
     dedicated:
-      ss2_type: common
-      dci_format_0_1_and_1_1: false   # fallback DCI formats (srsUE)
+      ss2_type: common              # Search Space type, has to be set to common
+      dci_format_0_1_and_1_1: false # Set correct DCI format (fallback)
   prach:
-    prach_config_index: 1
-    total_nof_ra_preambles: 64
-    nof_ssb_per_ro: 1
-    nof_cb_preambles_per_ssb: 64
+    prach_config_index: 1           # Sets PRACH config to match what is expected by srsUE
+    total_nof_ra_preambles: 64      # Sets number of available PRACH preambles
+    nof_ssb_per_ro: 1               # Sets the number of SSBs per RACH occasion.
+    nof_cb_preambles_per_ssb: 64    # Sets the number of contention based preambles per SSB.
   pdsch:
-    mcs_table: qam64
+    mcs_table: qam64                # Sets PDSCH MCS to 64 QAM
   pusch:
-    mcs_table: qam64
+    mcs_table: qam64                # Sets PUSCH MCS to 64 QAM
 
 log:
-  filename: /tmp/gnb.log
-  all_level: warning           # use "info" when debugging an attach
+  filename: /tmp/gnb.log            # Path of the log file.
+  all_level: info                   # Logging level applied to all layers.
   hex_max_size: 0
 
 pcap:
-  mac_enable: false
-  mac_filename: /tmp/gnb_mac.pcap
-  ngap_enable: false
-  ngap_filename: /tmp/gnb_ngap.pcap
+  mac_enable: false                 # Set to true to enable MAC-layer PCAPs.
+  mac_filename: /tmp/gnb_mac.pcap   # Path where the MAC PCAP is stored.
+  ngap_enable: false                # Set to true to enable NGAP PCAPs.
+  ngap_filename: /tmp/gnb_ngap.pcap # Path where the NGAP PCAP is stored.
